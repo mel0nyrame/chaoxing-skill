@@ -129,8 +129,9 @@ chaoxing-skill/
 
 | 题型 | 实现方式 | 说明 |
 |------|----------|------|
-| 单选题 | `span[data="A/B/C/D"]` → click `.answerBg` | 支持 4 选项标准单选题 |
-| 判断题 | `span[data="true/false"]` → click `.answerBg` | 对 = A, 错 = B |
+| 单选题 | `span[data="A/B/C/D"]` → click `.answerBg[role=radio]` | 选 1 个正确选项 |
+| 多选题 | `span[data="A/B/C/D"]` → 逐个 click `.answerBg[role=checkbox]` | 选多个正确选项，分别点击 |
+| 判断题 | `span[data="true/false"]` → click `.answerBg[role=radio]` | 对 = A(true), 错 = B(false) |
 | 填空题 | `UE.instants[N].body.innerText` | 通过 UEditor API 纯文本填充 |
 
 ## 已知限制
@@ -139,6 +140,17 @@ chaoxing-skill/
 - 需要用户在浏览器中保持登录状态
 - 不支持需要文件上传的题目
 - 程序题（编程填空）可能需要额外处理
+
+## 常见问题
+
+| 问题 | 原因 | 解决 |
+|------|------|------|
+| 填空题答案消失/截断 | `setContent()` 把 `<T>` 当 HTML 标签过滤 | 使用 `inst.body.innerText` 代替 |
+| 判断题选项点不上 | data 值是 `true/false` 不是 `A/B` | 判断题用 `span[data="true"]` / `span[data="false"]` |
+| 部分题目没填上 | 懒加载导致 DOM 未渲染 | 填充前先滚动到底部，等 1-2 秒 |
+| `UE is not defined` | UEditor JS 未加载完 | 等 2-3 秒后重试 |
+| curl 连接 localhost:3456 失败 | CDP Proxy 未启动或端口不同 | 检查 `CDP_PROXY_PORT` 环境变量 |
+| textarea 内容对了但页面空白 | UEditor 未自动回写 | 设置 `body.innerText` 后编辑器在焦点变化时会自动同步 |
 
 ## 注意事项
 
