@@ -215,11 +215,18 @@ answerBg.click();
 
 **绝对不要用 `setContent()`！** 它会将内容当做 HTML 解析，导致 `<T>`、`<>`、`<E>` 等包含尖括号的字符被过滤或转义。这是实战中踩过的坑。
 
-**正确做法：使用 `body.innerText` 直接设置纯文本：**
+**绝对不要使用转义字符！** 如 `\n`、`\t`、`\\` 等转义字符会被当作字面文本显示，而不是实际的换行或制表符。这是实战中踩过的坑。
+
+**正确做法：使用 `body.innerText` 直接设置纯文本，换行用实际的换行符：**
 
 ```javascript
 const inst = UE.instants["ueditorInstant" + index];
-inst.body.innerText = "答案内容";
+inst.body.innerText = "答案内容";  // 纯文本，无转义字符
+
+// 多行答案示例 - 使用实际换行，而非 \n
+inst.body.innerText = "第一行内容
+第二行内容
+第三行内容";
 ```
 
 #### 完整填充脚本模板
@@ -400,6 +407,22 @@ rm -f /tmp/homework_done.png
 **原因**：`setContent()` 把输入当 HTML 解析，`<X>` 被当成非法标签丢弃。
 
 **解决**：永不用 `setContent()`，只用 `inst.body.innerText = "答案"`。
+
+### 坑1.5：转义字符被当作字面文本显示
+
+**现象**：填空题答案中的换行显示为 `\n` 而不是实际换行，制表符显示为 `\t` 而不是实际缩进。
+
+**原因**：在 JavaScript 字符串中使用了转义字符如 `\n`、`\t`，但这些字符在 `innerText` 中会被当作字面文本处理。
+
+**解决**：在填充脚本中使用实际的换行符（直接回车），而不是转义字符 `\n`。例如：
+```javascript
+// 错误写法
+inst.body.innerText = "第一行\n第二行";
+
+// 正确写法
+inst.body.innerText = "第一行
+第二行";
+```
 
 ### 坑2：判断题用 `data="true/false"` 而非 `data="A/B"`
 
