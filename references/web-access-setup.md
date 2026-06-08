@@ -37,7 +37,7 @@ node "<WEB_ACCESS_BASE>/scripts/check-deps.mjs"
 1. 打开 Edge
 2. 地址栏输入 `edge://inspect/#remote-debugging`
 3. 勾选 "Allow remote debugging for this browser instance"
-4. 运行 chaoxing skill 自带的修复脚本：`bash edge-fix.sh <WEB_ACCESS_BASE>`
+4. 使用时加 `--browser edge` 参数或设置 `WEB_ACCESS_BROWSER=edge`
 
 ## CDP Proxy API 端口
 
@@ -46,14 +46,24 @@ CDP Proxy 默认运行在 `http://localhost:3456`，提供以下端点：
 | 端点 | 方法 | 用途 |
 |------|------|------|
 | `/targets` | GET | 列出浏览器所有 tab |
-| `/new?url=` | GET | 创建新后台 tab |
+| `/new` | POST | 创建新后台 tab（URL 走 POST body） |
 | `/close?target=` | GET | 关闭指定 tab |
-| `/navigate?target=&url=` | GET | 导航到新 URL |
+| `/navigate?target=` | POST | 导航到新 URL（URL 走 POST body） |
 | `/eval?target=` | POST | 在页面中执行 JavaScript |
 | `/click?target=` | POST | 点击 CSS 选择器对应的元素 |
+| `/clickAt?target=` | POST | 真实鼠标点击（触发文件对话框等） |
+| `/setFiles?target=` | POST | 文件上传（设置 file input 路径） |
 | `/scroll?target=&direction=` | GET | 滚动页面 |
 | `/screenshot?target=&file=` | GET | 截图保存 |
 | `/info?target=` | GET | 获取页面标题/URL/状态 |
+| `/back?target=` | GET | 后退 |
+
+### 页面内导航
+
+两种方式打开页面内的链接：
+
+- **`/click`**：在当前 tab 内直接点击用户视角中的可交互单元，简单直接，串行处理。适合需要在同一页面内连续操作的场景，如点击展开、翻页、进入详情等。
+- **`/new` + 完整 URL**：使用目标链接的完整地址（包含所有URL参数），在新 tab 中打开。适合需要同时访问多个页面的场景。
 
 ## 致谢
 

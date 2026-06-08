@@ -65,8 +65,10 @@ ver
 执行环境检查（`<WEB_ACCESS_BASE>` 替换为 web-access skill 的实际 base directory）：
 
 ```bash
-node "<WEB_ACCESS_BASE>/scripts/check-deps.mjs"
+node "<WEB_ACCESS_BASE>/scripts/check-deps.mjs" [--browser chrome|edge]
 ```
+
+可选 `--browser` 参数本次临时指定浏览器（chrome 或 edge），不写则使用 `config.env` 中的配置，默认为 chrome。
 
 期望输出包含：
 ```
@@ -85,29 +87,9 @@ proxy: ready
 
 勾选 **"Allow remote debugging for this browser instance"**，可能需要重启浏览器。
 
-### Edge 浏览器用户必读（macOS / Linux / Windows）
+### Edge 浏览器用户
 
-**web-access skill 原生只支持 Chrome。** Edge 用户需要修改 web-access skill 的两个脚本文件，在其中添加 Edge 的 DevToolsActivePort 路径。
-
-可使用本 skill 自带的修复脚本一键完成（自动识别平台）：
-
-```bash
-bash <CHAOXING_SKILL_BASE>/scripts/edge-fix.sh <WEB_ACCESS_BASE>
-```
-
-`<CHAOXING_SKILL_BASE>` 为本 skill 的安装目录，`<WEB_ACCESS_BASE>` 为 web-access skill 的 base directory。
-
-也可以手动修改 — 在 `check-deps.mjs` 和 `cdp-proxy.mjs` 中分别添加对应平台的 Edge 路径：
-
-| 平台 | 要添加的路径 |
-|------|-------------|
-| macOS | `path.join(home, 'Library/Application Support/Microsoft Edge/DevToolsActivePort'),` |
-| Linux | `path.join(home, '.config/microsoft-edge/DevToolsActivePort'),` |
-| Windows | `path.join(localAppData, 'Microsoft Edge/User Data/DevToolsActivePort'),` |
-
-在 `check-deps.mjs` 中找到对应平台的 `case` / `return` 数组，在 Chromium 行之后追加；在 `cdp-proxy.mjs` 中找到 `discoverChromePort()` 函数对应平台的 `possiblePaths.push(...)` 段末尾追加。
-
-修改后重新运行 `check-deps.mjs` 验证。
+web-access skill 已原生支持 Chrome 和 Edge。启动前可附加 `--browser edge` 参数本次临时使用 Edge，或在 `~/.claude/plugins/cache/web-access/web-access/<version>/config.env` 中写入 `WEB_ACCESS_BROWSER=edge` 永久生效。
 
 ### 使用前确认清单
 
